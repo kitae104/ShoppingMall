@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 주문 엔티티
+ */
 @Entity
 @Table(name = "orders")                             // order는 DB에서 예약어로 사용되므로 orders로 테이블명을 지정한다.
 @Getter
@@ -40,4 +43,36 @@ public class Order extends BaseEntity {
 
     private OrderStatus orderStatus;        // 주문상태
 
+    /**
+     * orderItem 객체를 order 객체의 orderItems 에 추가하는 메서드
+     */
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);          // 주문상품 추가
+        orderItem.setOrder(this);           // 주문상품과 주문 엔티티 연관관계 설정(양방향 설정)
+    }
+
+    /**
+     * 주문 엔티티 생성 메서드
+     */
+    public static Order createOrder(Member member, List<OrderItem> orderItemList) {
+        Order order = new Order();                  // 주문 엔티티 생성
+        order.setMember(member);                    // 주문 회원 설정
+        order.setOrderDate(LocalDateTime.now());    // 주문시간 설정
+        order.setOrderStatus(OrderStatus.ORDER);    // 주문상태 설정
+        for(OrderItem orderItem : orderItemList) {
+            order.addOrderItem(orderItem);          // 주문상품 추가
+        }
+        return order;                               // 주문 엔티티 반환
+    }
+
+    /**
+     * 총 주문 가격 조회
+     */
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        for(OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice();    // 주문 상품 가격 * 주문 수량
+        }
+        return totalPrice;                              // 총 주문 가격 반환
+    }
 }

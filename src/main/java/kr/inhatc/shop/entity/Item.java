@@ -3,6 +3,7 @@ package kr.inhatc.shop.entity;
 import jakarta.persistence.*;
 import kr.inhatc.shop.constant.ItemSellStatus;
 import kr.inhatc.shop.dto.ItemFormDto;
+import kr.inhatc.shop.exception.OutOfStockException;
 import kr.inhatc.shop.utils.audit.BaseEntity;
 import lombok.*;
 
@@ -46,4 +47,12 @@ public class Item extends BaseEntity {
         this.itemSellStatus = itemFormDto.getItemSellStatus();
     }
 
+    public void removeStock(int stockNumber) {
+        int restStock = this.stockNumber - stockNumber; // 주문 후 남은 재고 수량 계산
+        if (restStock < 0) {                            // 주문 수량이 재고 수량보다 많은 경우
+            throw new OutOfStockException
+                    ("상품의 재고가 부족합니다. (현재 재고 수량: " + this.stockNumber + ")");
+        }
+        this.stockNumber = restStock;       // 주문 후 남은 재고 수량을 현재 재고 값으로 설정
+    }
 }

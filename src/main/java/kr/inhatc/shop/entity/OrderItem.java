@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import kr.inhatc.shop.utils.audit.BaseEntity;
 import lombok.*;
 
+/**
+ * 주문 상품 엔티티
+ */
+
 @Entity
 @Getter
 @Setter
@@ -29,4 +33,23 @@ public class OrderItem extends BaseEntity {
     private int orderPrice;                 // 주문 가격
 
     private int count;                      // 주문 수량
+
+    /**
+     * 주문 상품 엔티티 생성 메서드
+     */
+    public static OrderItem createOrderItem(Item item, int count){
+        OrderItem orderItem = new OrderItem();      // 주문 상품 엔티티 생성
+        orderItem.setItem(item);                    // 주문 상품 설정
+        orderItem.setOrderPrice(item.getPrice());   // 주문 가격 설정
+        orderItem.setCount(count);                  // 주문 수량 설정
+        item.removeStock(count);                    // 주문 수량만큼 재고 감소
+        return orderItem;                           // 주문 상품 엔티티 반환
+    }
+
+    /**
+     * 주문 상품 가격 조회 메서드
+     */
+    public int getTotalPrice() {
+        return orderPrice * count;          // 주문 가격 * 주문 수량
+    }
 }
