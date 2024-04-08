@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
-import sources.repository.ItemRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -2,7 +2,7 @@ package kr.inhatc.shop.entity;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import sources.repository.MemberRepository;
+import kr.inhatc.shop.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package kr.inhatc.shop.entity;
 
 import jakarta.persistence.EntityManager;
-import sources.repository.ItemRepository;
-import sources.repository.OrderRepository;
+import kr.inhatc.shop.repository.ItemRepository;
+import kr.inhatc.shop.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
