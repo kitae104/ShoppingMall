@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,33 @@ public class OrderService {
             orderHistDtoList.add(orderHistDto);                             // 주문 정보 추가
         }
         return new PageImpl<OrderHistDto>(orderHistDtoList, pageable, totalCount);    // 페이지 구현 객체를 생성하여 반환
+    }
+
+    /**
+     * 주문에 대한 검증을 수행 (주문번호와 회원 이메일을 이용하여 검증)
+     * @param orderId 주문번호
+     * @param email 회원 이메일
+     * @return 주문 정보
+     */
+    @Transactional(readOnly = true)
+    public boolean validateOrder(Long orderId, String email) {
+        Member curMember = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);   // 로그인 회원 조회
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);          // 주문 조회
+        Member savedMember = order.getMember();    // 주문 회원 조회
+
+        if(!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())) {    // 주문 회원과 로그인 회원 비교
+            return false;    // 주문 회원과 로그인 회원이 다르면 false 반환
+        }
+        return true;    // 주문 회원과 로그인 회원이 같으면 true 반환
+    }
+
+    /**
+     * 주문 취소<br>
+     * 주문 취소 상태로 변경하면 변경 감지 기능에 의해서 트랜잭션이 끝날 때 업데이트 쿼리 실행
+     * @param orderId 주문번호
+     */
+    public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);    // 주문 조회
+        order.cancelOrder();    // 주문 취소
     }
 }

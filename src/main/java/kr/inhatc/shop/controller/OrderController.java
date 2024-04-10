@@ -65,4 +65,19 @@ public class OrderController {
 
         return "order/orderHist";
     }
+
+    /**
+     * 주문 취소 요청 처리
+     * @param orderId 주문번호
+     * @param principal 로그인한 사용자 정보
+     * @return 주문 취소 결과
+     */
+    @PostMapping(value = "/order/{orderId}/cancel")
+    public @ResponseBody ResponseEntity cancelOrder(@PathVariable("orderId") Long orderId, Principal principal) {
+        if(!orderService.validateOrder(orderId, principal.getName())) {    // 주문 취소 유효성 검사
+            return new ResponseEntity<String>("주문 취소 권한이 없습니다.", HttpStatus.FORBIDDEN);    // 주문 취소 권한이 없는 경우 403 에러 반환
+        }
+        orderService.cancelOrder(orderId);                          // 주문 취소 로직 실행
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);    // 주문 취소에 성공한 경우 200 성공 반환
+    }
 }

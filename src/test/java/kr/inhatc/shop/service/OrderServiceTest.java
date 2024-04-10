@@ -73,23 +73,23 @@ class OrderServiceTest {
         assertEquals(totalPrice, order.getTotalPrice());        // 총 주문 금액 일치 여부
     }
 
-//    @Test
-//    @DisplayName("주문 취소 테스트")
-//    public void cancelOrder(){
-//        Item item = saveItem();                     // 상품 저장
-//        Member member = saveMember();               // 회원 저장
-//
-//        OrderDto orderDto = new OrderDto();         // 주문 정보 생성
-//        orderDto.setCount(10);                      // 주문 수량
-//        orderDto.setItemId(item.getId());           // 상품 ID
-//        Long orderId = orderService.order(orderDto, member.getEmail()); // 주문
-//
-//        Order order = orderRepository.findById(orderId)         // 주문 정보 조회
-//                .orElseThrow(EntityNotFoundException::new);     // 주문 정보가 없을 경우 예외 발생
-//        orderService.cancelOrder(orderId);          // 주문 취소
-//
-//        assertEquals(OrderStatus.CANCEL, order.getOrderStatus());   // 주문 상태가 취소인지 확인
-//        assertEquals(100, item.getStockNumber());       // 상품 재고가 원복되었는지 확인
-//    }
+    @Test
+    @DisplayName("주문 취소 테스트")
+    public void cancelOrder(){
+        Item item = saveItem();                     // 상품 저장
+        Member member = saveMember();               // 회원 저장
+
+        OrderDto orderDto = new OrderDto();         // 주문 정보 생성
+        orderDto.setCount(10);                      // 주문 수량
+        orderDto.setItemId(item.getId());           // 상품 ID
+        Long orderId = orderService.order(orderDto, member.getEmail()); // 주문
+
+        Order order = orderRepository.findById(orderId)         // 주문 정보 조회
+                .orElseThrow(EntityNotFoundException::new);     // 주문 정보가 없을 경우 예외 발생
+        orderService.cancelOrder(orderId);          // 주문 취소
+
+        assertEquals(OrderStatus.CANCEL, order.getOrderStatus());   // 주문 상태가 취소인지 확인
+        assertEquals(100, item.getStockNumber());       // 상품 재고가 원복되었는지 확인
+    }
 
 }
