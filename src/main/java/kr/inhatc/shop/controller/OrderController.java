@@ -2,19 +2,24 @@ package kr.inhatc.shop.controller;
 
 import jakarta.validation.Valid;
 import kr.inhatc.shop.dto.OrderDto;
+import kr.inhatc.shop.dto.OrderHistDto;
 import kr.inhatc.shop.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 주문 관련 요청을 처리하기 위한 컨트롤러
@@ -48,5 +53,16 @@ public class OrderController {
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);    // 주문에 성공한 경우 주문 번호와 200 성공 반환
     }
 
+    @GetMapping(value = {"/orders", "/orders/{page}"})
+    public String orderHist(@PathVariable("page")Optional<Integer> page, Principal principal, Model model) {
 
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);    // 페이지 정보 생성
+        Page<OrderHistDto> orderHistDtoList = orderService.getOrderList(principal.getName(), pageable);    // 주문 목록 조회
+
+        model.addAttribute("orders", orderHistDtoList);         // 주문 목록을 모델에 추가
+        model.addAttribute("page", pageable.getPageNumber());   // 현재 페이지 번호를 모델에 추가
+        model.addAttribute("maxPage", 5);    // 최대 페이지 번호를 모델에 추가
+
+        return "order/orderHist";
+    }
 }

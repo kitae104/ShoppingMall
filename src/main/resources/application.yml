@@ -40,6 +40,7 @@ spring:
     properties:
       hibernate:
         format_sql: true    # 포멧 처리해서 보이기
+        default_batch_fetch_size: 1000  # 한번에 가져올 데이터 양 in 으로 쿼리 처리
     #database-platform: org.hibernate.dialect.MySQL8Dialect  # MySQL8 버전 사용
 
   ####################################

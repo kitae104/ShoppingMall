@@ -2,14 +2,17 @@ package kr.inhatc.shop.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import kr.inhatc.shop.dto.OrderDto;
-import kr.inhatc.shop.entity.Item;
-import kr.inhatc.shop.entity.Member;
-import kr.inhatc.shop.entity.Order;
-import kr.inhatc.shop.entity.OrderItem;
+import kr.inhatc.shop.dto.OrderHistDto;
+import kr.inhatc.shop.dto.OrderItemDto;
+import kr.inhatc.shop.entity.*;
+import kr.inhatc.shop.repository.ItemImgRepository;
 import kr.inhatc.shop.repository.ItemRepository;
 import kr.inhatc.shop.repository.MemberRepository;
 import kr.inhatc.shop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
+    private final ItemImgRepository itemImgRepository;
 
     /**
      * 주문 로직
@@ -46,5 +50,26 @@ public class OrderService {
         orderRepository.save(order);    // 주문 저장
 
         return order.getId();   // 주문번호 반환
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderHistDto> getOrderList(String email, Pageable pageable) {
+
+        List<Order> orders = orderRepository.findOrders(email, pageable);   // 주문 목록 조회
+        Long totalCount = orderRepository.countOrder(email);                // 주문 개수 조회
+
+        List<OrderHistDto> orderHistDtoList = new ArrayList<>();            // 주문 정보 리스트 생성
+
+        for(Order order : orders) {
+            OrderHistDto orderHistDto = new OrderHistDto(order);            // 주문 정보 생성
+            List<OrderItem> orderItems = order.getOrderItems();             // 주문 상품 목록 조회
+            for(OrderItem orderItem : orderItems) {
+                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn(orderItem.getItem().getId(), "Y");    // 대표 이미지 조회
+                OrderItemDto  orderItemDto = new OrderItemDto(orderItem, itemImg.getImgUrl());    // 주문 상품 정보 생성
+                orderHistDto.addOrderItemDto(orderItemDto);                 // 주문 상품 정보 추가
+            }
+            orderHistDtoList.add(orderHistDto);                             // 주문 정보 추가
+        }
+        return new PageImpl<OrderHistDto>(orderHistDtoList, pageable, totalCount);    // 페이지 구현 객체를 생성하여 반환
     }
 }
