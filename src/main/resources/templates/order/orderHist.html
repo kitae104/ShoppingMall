@@ -13,37 +13,36 @@
 
     <script th:inline="javascript">
         function cancelOrder(orderId) {
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
+            let token = $("meta[name='_csrf']").attr("content");                // csrf 토큰 값
+            let header = $("meta[name='_csrf_header']").attr("content");        // csrf 헤더 값
 
-            var url = "/order/" + orderId + "/cancel";
-            var paramData = {
-                orderId : orderId,
+            let url = "/order/" + orderId + "/cancel";  // 주문 취소 url
+            let paramData = {                           // 전송할 데이터
+                orderId : orderId,                      // 취소할 주문 번호
             };
 
-            var param = JSON.stringify(paramData);
+            let param = JSON.stringify(paramData);      // JSON 형태로 변환
 
             $.ajax({
-                url      : url,
-                type     : "POST",
-                contentType : "application/json",
-                data     : param,
-                beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                url      : url,                         // 주문 취소 url
+                type     : "POST",                      // POST 방식
+                contentType : "application/json",       // JSON 형태로 전송
+                data     : param,                       // 전송할 데이터
+                beforeSend : function(xhr){             // 전송하기 전에 헤더에 csrf값을 설정
                     xhr.setRequestHeader(header, token);
                 },
-                dataType : "json",
-                cache   : false,
-                success  : function(result, status){
+                dataType : "json",                      // JSON 타입으로 전송
+                cache   : false,                        // 캐시 사용 안함
+                success  : function(result, status){    // 성공시
                     alert("주문이 취소 되었습니다.");
-                    location.href='/orders/' + [[${page}]];
+                    location.href='/orders/' + [[${page}]]; // 현재 페이지로 이동
                 },
-                error : function(jqXHR, status, error){
-                    if(jqXHR.status == '401'){
+                error : function(jqXHR, status, error){ // 실패시
+                    if(jqXHR.status == '401'){          // 로그인이 안되어 있을 경우
                         alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
+                        location.href='/members/login'; // 로그인 페이지로 이동
                     } else{
-                        alert(jqXHR.responseText);
+                        alert(jqXHR.responseText);       // 오류 메시지 출력
                     }
                 }
             });

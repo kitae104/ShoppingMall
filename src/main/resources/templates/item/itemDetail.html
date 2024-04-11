@@ -69,42 +69,43 @@
             });
         }
 
+        //================================================================
+        // ajax를 이용한 장바구니 담기(새로고침 방지를 위해 비동기 방식)
+        //================================================================
         function addCart(){
-            let token = $("meta[name='_csrf']").attr("content");
-            let header = $("meta[name='_csrf_header']").attr("content");
+            let token = $("meta[name='_csrf']").attr("content");            //csrf값을 가져온다.
+            let header = $("meta[name='_csrf_header']").attr("content");    //csrf헤더값을 가져온다.
 
-            let url = "/cart";
-            let paramData = {
-                itemId : $("#itemId").val(),
-                count : $("#count").val()
+            let url = "/cart";                  //요청할 url
+            let paramData = {                   //요청할 데이터
+                itemId : $("#itemId").val(),    //상품번호
+                count : $("#count").val()       //수량
             };
 
-            let param = JSON.stringify(paramData);
+            let param = JSON.stringify(paramData);  //json형태로 변환(객체를 문자열로 변환)
 
             $.ajax({
-                url      : url,
-                type     : "POST",
-                contentType : "application/json",
-                data     : param,
-                beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                url      : url,                     //요청할 url
+                type     : "POST",                  //요청방식
+                contentType : "application/json",   //요청할 데이터 타입
+                data     : param,                   //요청할 데이터
+                beforeSend : function(xhr){         //요청전에 헤더에 csrf값을 설정
                     xhr.setRequestHeader(header, token);
                 },
-                dataType : "json",
-                cache   : false,
-                success  : function(result, status){
+                dataType : "json",                  //요청한 데이터 타입
+                cache   : false,                    //캐시 사용여부
+                success  : function(result, status){//성공시 처리
                     alert("상품을 장바구니에 담았습니다.");
-                    location.href='/';
+                    location.href='/';              //메인페이지로 이동
                 },
-                error : function(jqXHR, status, error){
+                error : function(jqXHR, status, error){     //에러시 처리
 
-                    if(jqXHR.status == '401'){
+                    if(jqXHR.status == '401'){              //로그인이 안되어있을 경우
                         alert('로그인 후 이용해주세요');
-                        location.href='/member/login';
+                        location.href='/member/login';      //로그인페이지로 이동
                     } else{
-                        alert(jqXHR.responseText);
+                        alert(jqXHR.responseText);          //그외의 에러는 메시지 출력
                     }
-
                 }
             });
         }

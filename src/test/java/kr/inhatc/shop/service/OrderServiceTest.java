@@ -91,5 +91,4 @@ class OrderServiceTest {
         assertEquals(OrderStatus.CANCEL, order.getOrderStatus());   // 주문 상태가 취소인지 확인
         assertEquals(100, item.getStockNumber());       // 상품 재고가 원복되었는지 확인
     }
-
 }
