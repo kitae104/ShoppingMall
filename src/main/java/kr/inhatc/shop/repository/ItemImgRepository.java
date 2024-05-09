@@ -19,7 +19,7 @@ public interface ItemImgRepository extends JpaRepository<ItemImg, Long> {
     /**
      * 상품의 대표 이미지 찾기
      * @param itemId
-     * @param repimgYn
+     * @param repImgYn
      * @return
      */
     ItemImg findByItemIdAndRepImgYn(Long itemId, String repImgYn);

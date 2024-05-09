@@ -101,4 +101,26 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);    // 주문 조회
         order.cancelOrder();    // 주문 취소
     }
+
+    /**
+     * 장바구니에서 주문할 상품 데이터를 전달받아서 주문을 생성하는 메소드
+     * @param orderDtoList 주문 정보 리스트
+     * @param email 회원 이메일
+     * @return 주문번호
+     */
+    public Long orders(List<OrderDto> orderDtoList, String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);    // 회원 조회
+
+        List<OrderItem> orderItemList = new ArrayList<>();    // 주문 상품 리스트 생성
+        for(OrderDto orderDto : orderDtoList) {
+            Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);    // 상품 조회
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());    // 주문 상품 생성(상품, 수량)
+            orderItemList.add(orderItem);    // 주문 상품 리스트에 추가
+        }
+
+        Order order = Order.createOrder(member, orderItemList);    // 주문 생성(회원, 주문 상품 리스트)
+        orderRepository.save(order);    // 주문 저장
+
+        return order.getId();           // 주문번호 반환
+    }
 }
